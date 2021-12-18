@@ -1,5 +1,6 @@
 package com.example.jade
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -11,7 +12,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
-
+    private var userUID: String = ""
+    private var userGender: String = ""
     private lateinit var userEmail: EditText
     private lateinit var userPassword: EditText
     private lateinit var btnSubmit: Button
@@ -38,12 +40,27 @@ class MainActivity : AppCompatActivity() {
 
             jsonObjectRequest = JsonObjectRequest(url+"/login",jsonObject,{
                     response ->
-                    Toast.makeText( this,response.toString(), Toast.LENGTH_SHORT).show();
+
+                    if(response.has("message")){
+                        Toast.makeText( this,"Your username or password is not correct", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText( this,"Wellcome", Toast.LENGTH_SHORT).show();
+                        userUID = response.get("uid").toString()
+                        userGender = response.get("gender").toString()
+                    }
+
                 },{ error ->
                     error.printStackTrace()
             })
             VolleySingleton.getInstance(applicationContext).addToRequestQueue(jsonObjectRequest)
         }
 
+    }
+
+    private fun gotoLogin(){
+        val i = Intent(this, LoggedActivity::class.java)
+        i.putExtra("personaje", 2)
+        startActivity(i)
+        finish()
     }
 }
